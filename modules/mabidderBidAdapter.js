@@ -14,7 +14,6 @@ export const spec = {
   buildRequests: function(validBidRequests, bidderRequest) {
     const fpd = bidderRequest.ortb2;
     const bids = [];
-
     validBidRequests.forEach(bidRequest => {
       const sizes = [];
       bidRequest.sizes.forEach(size => {
