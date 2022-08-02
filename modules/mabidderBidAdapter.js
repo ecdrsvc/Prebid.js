@@ -35,9 +35,9 @@ export const spec = {
       data: {
         v: $$PREBID_GLOBAL$$.version,
         bids: bids,
-        url: bidderRequest.refererInfo.canonicalUrl || '',
-        referer: bidderRequest.refererInfo.referer || '',
-        fpd: fpd ? JSON.stringify(fpd) : JSON.stringify({})
+        url: bidderRequest.refererInfo.page || '',
+        referer: bidderRequest.refererInfo.ref || '',
+        fpd: fpd || {}
       }
     };
 
