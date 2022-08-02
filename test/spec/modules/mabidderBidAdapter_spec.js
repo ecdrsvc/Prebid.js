@@ -73,7 +73,7 @@ describe('mabidderBidAdapter', () => {
     })
 
     it('accepts an optional fpd parameter', () => {
-      expect(req.data.fpd).to.exist.and.to.be.a('String')
+      expect(req.data.fpd).to.exist.and.to.be.a('Object')
     })
   })
 
