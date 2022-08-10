@@ -89,7 +89,7 @@ describe('mabidderBidAdapter', () => {
           'requestId': 'abc123',
           'ttl': 60,
           'netRevenue': true,
-          'currency': 'CAD',
+          'currency': 'USD',
           'mediaType': BANNER,
           'meta': {
             'advertiserDomains': ['https://loblaws.ca']
@@ -102,7 +102,7 @@ describe('mabidderBidAdapter', () => {
       expect(response).to.have.property('ad').equal('<!-- Creative -->')
       expect(response).to.have.property('requestId').equal('abc123')
       expect(response).to.have.property('cpm').equal(0.5)
-      expect(response).to.have.property('currency').equal('CAD')
+      expect(response).to.have.property('currency').equal('USD')
       expect(response).to.have.property('width').equal(300)
       expect(response).to.have.property('height').equal(250)
       expect(response).to.have.property('ttl').equal(60)
