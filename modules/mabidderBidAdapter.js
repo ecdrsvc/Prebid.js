@@ -2,7 +2,7 @@ import { registerBidder } from '../src/adapters/bidderFactory.js';
 import { BANNER, VIDEO, NATIVE } from '../src/mediaTypes.js';
 import { deepAccess } from '../src/utils.js';
 const BIDDER_CODE = 'mabidder';
-export const baseUrl = 'https://prometheus-ix.ecdrsvc.com/prometheus/bid';
+export const baseUrl = 'https://prebid.ecdrsvc.com/bid';
 export const spec = {
   code: BIDDER_CODE,
   isBidRequestValid: function(bid) {
