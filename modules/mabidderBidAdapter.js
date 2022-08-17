@@ -2,7 +2,7 @@ import { registerBidder } from '../src/adapters/bidderFactory.js';
 import { BANNER, VIDEO, NATIVE } from '../src/mediaTypes.js';
 import { deepAccess } from '../src/utils.js';
 const BIDDER_CODE = 'mabidder';
-export const baseUrl = 'https://prometheus-ix.ecdrsvc.com/prometheus/bid';
+export const baseUrl = 'https://prebid.ecdrsvc.com/bid';
 export const spec = {
   code: BIDDER_CODE,
   isBidRequestValid: function(bid) {
@@ -14,7 +14,6 @@ export const spec = {
   buildRequests: function(validBidRequests, bidderRequest) {
     const fpd = bidderRequest.ortb2;
     const bids = [];
-
     validBidRequests.forEach(bidRequest => {
       const sizes = [];
       bidRequest.sizes.forEach(size => {
@@ -36,9 +35,9 @@ export const spec = {
       data: {
         v: $$PREBID_GLOBAL$$.version,
         bids: bids,
-        url: bidderRequest.refererInfo.canonicalUrl || '',
-        referer: bidderRequest.refererInfo.referer || '',
-        fpd: fpd ? JSON.stringify(fpd) : JSON.stringify({})
+        url: bidderRequest.refererInfo.page || '',
+        referer: bidderRequest.refererInfo.ref || '',
+        fpd: fpd || {}
       }
     };
 
