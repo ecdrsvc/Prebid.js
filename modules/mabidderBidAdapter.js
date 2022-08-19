@@ -4,6 +4,7 @@ import { deepAccess } from '../src/utils.js';
 const BIDDER_CODE = 'mabidder';
 export const baseUrl = 'https://prebid.ecdrsvc.com/bid';
 export const spec = {
+  supportedMediaTypes: [BANNER],
   code: BIDDER_CODE,
   isBidRequestValid: function(bid) {
     if (typeof bid.params === 'undefined') {
@@ -55,8 +56,7 @@ export const spec = {
       });
     }
     return bidResponses;
-  },
-  supportedMediaTypes: [BANNER]
+  }
 }
 
 function getFormatType(bidRequest) {
