@@ -1,6 +1,5 @@
 import { registerBidder } from '../src/adapters/bidderFactory.js';
-import { BANNER, VIDEO, NATIVE } from '../src/mediaTypes.js';
-import { deepAccess } from '../src/utils.js';
+import { BANNER } from '../src/mediaTypes.js';
 const BIDDER_CODE = 'mabidder';
 export const baseUrl = 'https://prebid.ecdrsvc.com/bid';
 export const spec = {
@@ -27,7 +26,7 @@ export const spec = {
         bidId: bidRequest.bidId,
         sizes: sizes,
         ppid: bidRequest.params.ppid,
-        mediaType: getFormatType(bidRequest)
+        mediaType: BANNER
       })
     });
     const req = {
@@ -57,12 +56,5 @@ export const spec = {
     }
     return bidResponses;
   }
-}
-
-function getFormatType(bidRequest) {
-  if (deepAccess(bidRequest, 'mediaTypes.banner')) return BANNER
-  if (deepAccess(bidRequest, 'mediaTypes.video')) return VIDEO
-  if (deepAccess(bidRequest, 'mediaTypes.native')) return NATIVE
-  return BANNER
 }
 registerBidder(spec);
