@@ -106,6 +106,20 @@ describe('config API', function () {
     sinon.assert.calledOnce(wildcard);
   });
 
+  it('getConfig subscribers are called immediately if passed {init: true}', () => {
+    const listener = sinon.spy();
+    setConfig({foo: 'bar'});
+    getConfig('foo', listener, {init: true});
+    sinon.assert.calledWith(listener, {foo: 'bar'});
+  });
+
+  it('getConfig subscribers with no topic are called immediately if passed {init: true}', () => {
+    const listener = sinon.spy();
+    setConfig({foo: 'bar'});
+    getConfig(listener, {init: true});
+    sinon.assert.calledWith(listener, sinon.match({foo: 'bar'}));
+  });
+
   it('sets and gets arbitrary configuration properties', function () {
     setConfig({ baz: 'qux' });
     expect(getConfig('baz')).to.equal('qux');
@@ -582,6 +596,7 @@ describe('config API', function () {
     }
 
     setConfig({
+      bidderTimeout: 2000,
       ortb2: {
         user: {
           data: [userObj1, userObj2]
@@ -595,6 +610,7 @@ describe('config API', function () {
     });
 
     const rtd = {
+      bidderTimeout: 3000,
       ortb2: {
         user: {
           data: [userObj1]
@@ -609,11 +625,13 @@ describe('config API', function () {
     mergeConfig(rtd);
 
     let ortb2Config = getConfig('ortb2');
+    let bidderTimeout = getConfig('bidderTimeout');
 
     expect(ortb2Config.user.data).to.deep.include.members([userObj1, userObj2]);
     expect(ortb2Config.site.content.data).to.deep.include.members([siteObj1]);
     expect(ortb2Config.user.data).to.have.lengthOf(2);
     expect(ortb2Config.site.content.data).to.have.lengthOf(1);
+    expect(bidderTimeout).to.equal(3000);
   });
 
   it('should not corrupt global configuration with bidder configuration', () => {
