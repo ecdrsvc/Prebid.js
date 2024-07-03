@@ -17,7 +17,22 @@ describe('mabidderBidAdapter', () => {
     'params': {
       'ppid': 'string1',
     }
-
+  }
+  const bidRequestVideo = {
+    'bidId': '12345',
+    'bidder': 'mabidder',
+    'mediaTypes': {
+      'video': {
+        'playerSize': [640, 480],
+        'mimes': ['video/mp4'],
+        'protocols': [1, 2, 3, 4, 5, 6, 7, 8],
+        'playbackmethod': [2],
+        'skip': 1
+      }
+    },
+    'params': {
+      'ppid': 'string1',
+    }
   }
 
   describe('inherited functions', () => {
@@ -27,7 +42,7 @@ describe('mabidderBidAdapter', () => {
   })
 
   describe('isBidRequestValid', () => {
-    it('should return true when required params are found', () => {
+    it('should validate a banner request when required params are found', () => {
       expect(spec.isBidRequestValid(bidRequestBanner)).to.equal(true)
     })
 
@@ -43,6 +58,23 @@ describe('mabidderBidAdapter', () => {
       delete bid.params
       expect(spec.isBidRequestValid(bid)).to.equal(false)
       bidRequestBanner.params = params
+    })
+
+    it('should validate when sizes array is present or if present in the mediaTypes object', () => {
+      let bid = Object.assign({}, bidRequestBanner)
+      const mediaTypes = bid.mediaTypes
+      delete bid.mediaTypes
+      expect(spec.isBidRequestValid(bid)).to.equal(true)
+      bid.mediaTypes = mediaTypes
+
+      const sizes = bid.sizes
+      delete bid.sizes
+      expect(spec.isBidRequestValid(bid)).to.equal(true)
+      bid.sizes = sizes
+    })
+
+    it('should validate a video request when required params are found', () => {
+      expect(spec.isBidRequestValid(bidRequestVideo)).to.equal(true)
     })
   })
 
