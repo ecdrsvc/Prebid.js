@@ -2,6 +2,7 @@ import { expect } from 'chai'
 import { baseUrl, spec } from 'modules/mabidderBidAdapter.js'
 import { newBidder } from 'src/adapters/bidderFactory.js'
 import { BANNER } from '../../../src/mediaTypes.js';
+import util from 'util';
 
 describe('mabidderBidAdapter', () => {
   const adapter = newBidder(spec)
@@ -24,10 +25,7 @@ describe('mabidderBidAdapter', () => {
     'mediaTypes': {
       'video': {
         'playerSize': [640, 480],
-        'mimes': ['video/mp4'],
-        'protocols': [1, 2, 3, 4, 5, 6, 7, 8],
-        'playbackmethod': [2],
-        'skip': 1
+        'mimes': ['video/mp4']
       }
     },
     'params': {
@@ -79,33 +77,50 @@ describe('mabidderBidAdapter', () => {
   })
 
   describe('buildRequests', () => {
-    const bidRequests = [bidRequestBanner]
-    const req = spec.buildRequests(bidRequests, {
+    let bidRequestsBanner = [bidRequestBanner]
+    let reqBanner = spec.buildRequests(bidRequestsBanner, {
       auctionId: '123',
       refererInfo: {
         referer: 'http://test.com/path.html'
       }
     })
 
-    it('sends bid request to ENDPOINT via POST', () => {
-      expect(req.method).to.equal('POST')
-      expect(req.url.indexOf('https://')).to.equal(0)
-      expect(req.url).to.equal(baseUrl)
+    it('sends bid reqBanneruest to ENDPOINT via POST', () => {
+      expect(reqBanner.method).to.equal('POST')
+      expect(reqBanner.url.indexOf('https://')).to.equal(0)
+      expect(reqBanner.url).to.equal(baseUrl)
     })
 
     it('contains prebid version parameter', () => {
-      expect(req.data.v).to.equal($$PREBID_GLOBAL$$.version)
+      expect(reqBanner.data.v).to.equal($$PREBID_GLOBAL$$.version)
     })
 
     it('sends the correct bid parameters for banner', () => {
-      expect(req.data.bids[0].bidId).to.equal(bidRequestBanner.bidId)
-      expect(req.data.bids[0].ppid).to.equal(bidRequestBanner.params.ppid)
-      expect(req.data.bids[0].sizes[0].width).to.equal(bidRequestBanner.sizes[0][0])
-      expect(req.data.bids[0].sizes[0].height).to.equal(bidRequestBanner.sizes[0][1])
+      expect(reqBanner.data.bids[0].bidId).to.equal(bidRequestBanner.bidId)
+      expect(reqBanner.data.bids[0].ppid).to.equal(bidRequestBanner.params.ppid)
+      expect(reqBanner.data.bids[0].sizes[0].width).to.equal(bidRequestBanner.sizes[0][0])
+      expect(reqBanner.data.bids[0].sizes[0].height).to.equal(bidRequestBanner.sizes[0][1])
     })
 
     it('accepts an optional fpd parameter', () => {
-      expect(req.data.fpd).to.exist.and.to.be.a('Object')
+      expect(reqBanner.data.fpd).to.exist.and.to.be.a('Object')
+    })
+
+    // Video
+    let bidRequestsVideo = [bidRequestVideo]
+    let reqVideo = spec.buildRequests(bidRequestsVideo, {
+      auctionId: '123',
+      refererInfo: {
+        referer: 'http://test.com/path.html'
+      }
+    })
+
+    it('sends the correct bid parameters for video', () => {
+      expect(reqVideo.data.bids[0].bidId).to.equal(bidRequestVideo.bidId)
+      expect(reqVideo.data.bids[0].ppid).to.equal(bidRequestVideo.params.ppid)
+      expect(reqVideo.data.bids[0].sizes[0].width).to.equal(bidRequestVideo.mediaTypes.video.playerSize[0])
+      expect(reqVideo.data.bids[0].sizes[0].height).to.equal(bidRequestVideo.mediaTypes.video.playerSize[1])
+      expect(reqVideo.data.bids[0].video).to.exist.and.to.be.a('Object')
     })
   })
 
