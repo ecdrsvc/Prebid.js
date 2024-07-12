@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Prebid.js Video Adapter Test</title>
+</head>
+<body>
+    <div id="player-container">
+        <video id="video-player" controls width="640" height="360">
+            <!-- Fallback content for non-supporting browsers -->
+            Your browser does not support the video tag.
+        </video>
+    </div>
+
+    <script>
+        // Function to load Prebid.js asynchronously after DOM is ready
+        function loadPrebid() {
+            var script = document.createElement('script');
+            script.src = '../../build/dev/prebid.js';
+            script.async = true;
+            script.onload = function() {
+                // Once Prebid.js is loaded, initialize ad unit and request bids
+                var adUnit = {
+                    code: 'video-ad-unit',
+                    mediaTypes: {
+                        video: {
+                            context: 'instream', // or outstream
+                            playerSize: [640, 360],
+                            mimes: ['video/mp4']
+                        }
+                    },
+                    bids: [{
+                        bidder: 'mabidder',
+                        params: {
+                            ppid: 'testvideo'
+                        }
+                    }]
+                };
+
+                pbjs.que.push(function() {
+                    pbjs.addAdUnits(adUnit);
+                    pbjs.requestBids({
+                        bidsBackHandler: function(bidResponses) {
+                            console.log('Bid Responses:', bidResponses);
+
+                            // Accessing the bids array inside the ad unit code key
+                            var adUnitCode = 'video-ad-unit';
+                            var adUnitBids = bidResponses[adUnitCode].bids;
+
+                            if (adUnitBids.length > 0) {
+                                var selectedBid = adUnitBids.find(function(bid) {
+                                    return bid.mediaType === 'video';
+                                });
+
+                                if (selectedBid) {
+                                    var vastUrl = selectedBid.vastUrl;
+
+                                    // Fetch the VAST XML
+                                    fetchVastXml(vastUrl);
+                                } else {
+                                    console.error('No valid bid found for video ad.');
+                                }
+                            } else {
+                                console.error('No bids received for ad unit:', adUnitCode);
+                            }
+                        }
+                    });
+                });
+            };
+            document.head.appendChild(script);
+        }
+
+        // Load Prebid.js after DOMContentLoaded
+        document.addEventListener('DOMContentLoaded', loadPrebid);
+
+        function fetchVastXml(vastUrl) {
+    fetch(vastUrl)
+        .then(function(response) {
+            return response.text();
+        })
+        .then(function(vastXml) {
+            // Parse VAST XML to find the video URL
+            var parser = new DOMParser();
+            var xmlDoc = parser.parseFromString(vastXml, 'text/xml');
+            var mediaFile = xmlDoc.querySelector('MediaFile');
+
+            if (mediaFile) {
+                var videoUrl = mediaFile.textContent.trim();
+
+                // Load the video URL into the video player
+                var videoPlayer = document.getElementById('video-player');
+                videoPlayer.src = videoUrl;
+                videoPlayer.load(); // Ensure the video is loaded
+
+                // Wait for user interaction (e.g., click) to play the video
+                document.addEventListener('click', function() {
+                    videoPlayer.play()
+                        .then(function() {
+                            console.log('Video started playing');
+                        })
+                        .catch(function(error) {
+                            console.error('Failed to play video:', error);
+                        });
+                }, { once: true });
+            } else {
+                console.error('No valid MediaFile found in VAST XML.');
+            }
+        })
+        .catch(function(error) {
+            console.error('Error fetching or parsing VAST XML:', error);
+        });
+}
+ 
+ 
+    </script>
+</body>
+</html>
