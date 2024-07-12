@@ -5,7 +5,9 @@ import { ortbConverter } from '../libraries/ortbConverter/converter.js';
 import { deepAccess } from '../src/utils.js';
 
 const BIDDER_CODE = 'mabidder';
-export const baseUrl = 'https://prebid.ecdrsvc.com/bid';
+// export const baseUrl = 'https://prebid.ecdrsvc.com/bid';
+// export const baseUrl = 'http://10.59.205.112:8080/bid';
+export const baseUrl = 'http://172.20.10.5:8080/bid';
 const converter = ortbConverter({})
 
 export const spec = {
@@ -58,6 +60,9 @@ export const spec = {
         return [];
       }
       body.Responses.forEach((bidResponse) => {
+        if (bidResponse.mediaType == VIDEO) {
+          bidResponse.vastUrl = bidResponse.ad;
+        }
         bidResponses.push(bidResponse);
       });
     }
@@ -86,9 +91,15 @@ function getSizes(bidRequest) {
     });
   } else if (bidRequest.mediaType == VIDEO || isVideo(bidRequest)) {
     const video = deepAccess(bidRequest, 'mediaTypes.video')
+    let w = 0;
+    let h = 0;
+    if (video && video.playerSize && video.playerSize.length > 0 && video.playerSize[0].length == 2) {
+      w = video.playerSize[0][0];
+      h = video.playerSize[0][1];
+    }
     sizes.push({
-      width: video.playerSize[0],
-      height: video.playerSize[1]
+      width: w,
+      height: h
     });
   } else if (bidRequest.sizes && Array.isArray(bidRequest.sizes) && Array.isArray(bidRequest.sizes[0])) {
     bidRequest.sizes.forEach(size => {
